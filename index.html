@@ -214,29 +214,29 @@ function drawCard() {
   drawRoundRect(ctx, 26, 26, W - 52, H - 52, 20);
   ctx.stroke();
 
-  // 3. Logo Pachanga Centrado Superior (Se mantiene arriba)
+  // 3. Logo Pachanga Centrado Superior
   if (logoImage.complete && logoImage.naturalWidth !== 0) {
-    const logoW = 440;
+    const logoW = 420;
     const logoH = (logoImage.height / logoImage.width) * logoW;
-    ctx.drawImage(logoImage, (W - logoW) / 2, 40, logoW, logoH);
+    ctx.drawImage(logoImage, (W - logoW) / 2, 35, logoW, logoH);
   }
 
-  // 4. Etiqueta "CARNÉ PACHANGOSO" (Desplazada hacia abajo para despejar el logo)
-  const tagW = 460, tagH = 55, tagX = (W - tagW) / 2, tagY = 230;
+  // 4. Etiqueta "CARNÉ PACHANGOSO"
+  const tagW = 440, tagH = 50, tagX = (W - tagW) / 2, tagY = 210;
   ctx.strokeStyle = '#d4af37';
   ctx.lineWidth = 2.5;
   drawRoundRect(ctx, tagX, tagY, tagW, tagH, 18);
   ctx.stroke();
 
   ctx.fillStyle = '#f7ebd3';
-  ctx.font = '800 24px "Montserrat", sans-serif';
+  ctx.font = '800 22px "Montserrat", sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText('CARNÉ PACHANGOSO', W / 2, tagY + 36);
+  ctx.fillText('CARNÉ PACHANGOSO', W / 2, tagY + 33);
 
-  // 5. Foto del usuario centrada (Desplazada hacia abajo)
-  const photoW = 480, photoH = 370, photoRadius = 25;
+  // 5. Foto del usuario AGRANDADA (proporción vertical 4:5 aprox. - 450x540px)
+  const photoW = 450, photoH = 540, photoRadius = 22;
   const photoX = (W - photoW) / 2;
-  const photoY = 310;
+  const photoY = 275;
 
   ctx.save();
   drawRoundRect(ctx, photoX, photoY, photoW, photoH, photoRadius);
@@ -271,74 +271,74 @@ function drawCard() {
   // Reset de alineación
   ctx.textAlign = 'left';
 
-  // 6. BLOQUES DE DATOS (Desplazados proporcionalmente hacia abajo)
-  let cursorY = 720;
+  // 6. BLOQUES DE DATOS (Desplazados hacia abajo para llenar el área inferior)
+  let cursorY = 845;
   const marginX = 60;
   const lineW = W - (marginX * 2);
 
   // Fila 1: Nombre
   ctx.fillStyle = '#d4af37';
-  ctx.font = '700 20px "Montserrat", sans-serif';
+  ctx.font = '700 19px "Montserrat", sans-serif';
   ctx.fillText('NOMBRE:', marginX, cursorY);
   ctx.fillStyle = '#ffffff';
-  drawFittedText(ctx, document.getElementById('nombre').value, marginX + 115, cursorY + 4, lineW - 115, 40);
+  drawFittedText(ctx, document.getElementById('nombre').value, marginX + 110, cursorY + 3, lineW - 110, 38);
   ctx.strokeStyle = '#d4af37';
   ctx.lineWidth = 1.5;
-  ctx.beginPath(); ctx.moveTo(marginX, cursorY + 18); ctx.lineTo(W - marginX, cursorY + 18); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(marginX, cursorY + 14); ctx.lineTo(W - marginX, cursorY + 14); ctx.stroke();
 
   // Fila 2: Edad y Signo
-  cursorY += 68;
+  cursorY += 58;
   ctx.fillStyle = '#d4af37';
-  ctx.font = '700 20px "Montserrat", sans-serif';
+  ctx.font = '700 19px "Montserrat", sans-serif';
   ctx.fillText('EDAD:', marginX, cursorY);
   ctx.fillStyle = '#ffffff';
-  drawFittedText(ctx, document.getElementById('edad').value, marginX + 80, cursorY + 4, 100, 40);
+  drawFittedText(ctx, document.getElementById('edad').value, marginX + 75, cursorY + 3, 100, 38);
 
   ctx.fillStyle = '#d4af37';
-  ctx.font = '700 20px "Montserrat", sans-serif';
+  ctx.font = '700 19px "Montserrat", sans-serif';
   ctx.fillText('SIGNO:', marginX + 320, cursorY);
   ctx.fillStyle = '#ffffff';
-  drawFittedText(ctx, document.getElementById('signo').value, marginX + 410, cursorY + 4, lineW - 410, 40);
-  ctx.beginPath(); ctx.moveTo(marginX, cursorY + 18); ctx.lineTo(W - marginX, cursorY + 18); ctx.stroke();
+  drawFittedText(ctx, document.getElementById('signo').value, marginX + 400, cursorY + 3, lineW - 400, 38);
+  ctx.beginPath(); ctx.moveTo(marginX, cursorY + 14); ctx.lineTo(W - marginX, cursorY + 14); ctx.stroke();
 
   // Fila 3: Localidad
-  cursorY += 68;
+  cursorY += 58;
   ctx.fillStyle = '#d4af37';
-  ctx.font = '700 20px "Montserrat", sans-serif';
+  ctx.font = '700 19px "Montserrat", sans-serif';
   ctx.fillText('LOCALIDAD:', marginX, cursorY);
   ctx.fillStyle = '#ffffff';
-  drawFittedText(ctx, document.getElementById('localidad').value, marginX + 145, cursorY + 4, lineW - 145, 40);
-  ctx.beginPath(); ctx.moveTo(marginX, cursorY + 18); ctx.lineTo(W - marginX, cursorY + 18); ctx.stroke();
+  drawFittedText(ctx, document.getElementById('localidad').value, marginX + 140, cursorY + 3, lineW - 140, 38);
+  ctx.beginPath(); ctx.moveTo(marginX, cursorY + 14); ctx.lineTo(W - marginX, cursorY + 14); ctx.stroke();
 
   // Fila 4: Profesión
-  cursorY += 68;
+  cursorY += 58;
   ctx.fillStyle = '#d4af37';
-  ctx.font = '700 20px "Montserrat", sans-serif';
+  ctx.font = '700 19px "Montserrat", sans-serif';
   ctx.fillText('PROFESIÓN:', marginX, cursorY);
   ctx.fillStyle = '#ffffff';
-  drawFittedText(ctx, document.getElementById('profesion').value, marginX + 145, cursorY + 4, lineW - 145, 40);
-  ctx.beginPath(); ctx.moveTo(marginX, cursorY + 18); ctx.lineTo(W - marginX, cursorY + 18); ctx.stroke();
+  drawFittedText(ctx, document.getElementById('profesion').value, marginX + 140, cursorY + 3, lineW - 140, 38);
+  ctx.beginPath(); ctx.moveTo(marginX, cursorY + 14); ctx.lineTo(W - marginX, cursorY + 14); ctx.stroke();
 
   // Fila 5: Describite
-  cursorY += 65;
+  cursorY += 55;
   ctx.fillStyle = '#d4af37';
-  ctx.font = '700 18px "Montserrat", sans-serif';
+  ctx.font = '700 17px "Montserrat", sans-serif';
   ctx.fillText('DESCRIBITE:', marginX, cursorY);
 
   ctx.fillStyle = '#ffffff';
-  drawTwoLineText(ctx, document.getElementById('descripcion').value, marginX + 145, cursorY - 2, lineW - 145, 30, 36);
-  ctx.beginPath(); ctx.moveTo(marginX, cursorY + 50); ctx.lineTo(W - marginX, cursorY + 50); ctx.stroke();
+  drawTwoLineText(ctx, document.getElementById('descripcion').value, marginX + 135, cursorY - 2, lineW - 135, 28, 34);
+  ctx.beginPath(); ctx.moveTo(marginX, cursorY + 45); ctx.lineTo(W - marginX, cursorY + 45); ctx.stroke();
 
-  // 7. PIE DESTACADO
-  cursorY += 92;
+  // 7. PIE DESTACADO (Ubicado más abajo para equilibrar con el borde inferior)
+  cursorY += 78;
   ctx.textAlign = 'center';
   ctx.fillStyle = '#d4af37';
-  ctx.font = '700 18px "Montserrat", sans-serif';
+  ctx.font = '700 16px "Montserrat", sans-serif';
   ctx.fillText('CANTIDAD DE JUNTADAS PACHANGUERAS', W / 2, cursorY);
 
   ctx.fillStyle = '#ffffff';
-  ctx.font = '700 48px "Caveat", cursive, sans-serif';
-  ctx.fillText(document.getElementById('juntadas').value, W / 2, cursorY + 45);
+  ctx.font = '700 42px "Caveat", cursive, sans-serif';
+  ctx.fillText(document.getElementById('juntadas').value, W / 2, cursorY + 38);
 }
 
 document.getElementById('generate').addEventListener('click', drawCard);
@@ -351,4 +351,4 @@ document.getElementById('download').addEventListener('click', function() {
 });
 </script>
 </body>
-</html>
+</html></html>
