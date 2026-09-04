@@ -1,26 +1,29 @@
-HTML
 <!doctype html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Pachanga — Carné Pachangoso</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
 <style>
   *{box-sizing:border-box}
-  body{margin:0;background:#eee;font-family:Arial,sans-serif;color:#222}
-  .wrap{max-width:1050px;margin:0 auto;padding:22px}
-  h1{margin:0 0 6px}
-  .sub{margin:0 0 20px;color:#666}
-  .panel{background:#fff;border-radius:14px;padding:20px;box-shadow:0 2px 12px #0001;margin-bottom:20px}
+  body{margin:0;background:#111;font-family:'Montserrat',sans-serif;color:#fff}
+  .wrap{max-width:1100px;margin:0 auto;padding:22px}
+  h1{margin:0 0 6px;color:#d4af37}
+  .sub{margin:0 0 20px;color:#aaa}
+  .panel{background:#1c1c1c;border-radius:14px;padding:20px;box-shadow:0 4px 15px rgba(0,0,0,0.5);margin-bottom:20px;border:1px solid #333}
   .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
-  label{font-weight:700;font-size:14px}
-  input{width:100%;margin-top:6px;padding:11px;border:1px solid #ccc;border-radius:8px;font-size:16px}
+  label{font-weight:700;font-size:14px;color:#d4af37}
+  input, select, textarea{width:100%;margin-top:6px;padding:11px;border:1px solid #444;border-radius:8px;font-size:16px;background:#2a2a2a;color:#fff;font-family:'Montserrat',sans-serif}
+  input:focus, select:focus, textarea:focus{outline:none;border-color:#d4af37}
+  textarea{resize:vertical;height:60px}
   .full{grid-column:1/-1}
-  button{border:0;border-radius:9px;padding:12px 18px;font-size:16px;font-weight:700;cursor:pointer;margin-top:16px}
-  #generate{background:#111;color:#f4d36b}
-  #download{background:#f4d36b;color:#111;margin-left:8px}
-  canvas{display:block;width:100%;height:auto;border-radius:10px;background:#000}
-  .note{font-size:13px;color:#666;margin-top:10px}
+  button{border:0;border-radius:9px;padding:12px 22px;font-size:16px;font-weight:700;cursor:pointer;margin-top:16px}
+  #generate{background:#d4af37;color:#111}
+  #download{background:#fff;color:#111;margin-left:8px}
+  canvas{display:block;width:100%;height:auto;border-radius:14px;background:#000;box-shadow:0 0 20px rgba(0,0,0,0.8)}
   @media(max-width:700px){.grid{grid-template-columns:1fr}}
 </style>
 </head>
@@ -28,104 +31,325 @@ HTML
 <div class="wrap">
   <div class="panel">
     <h1>Generador de Carné Pachangoso</h1>
-    <p class="sub">Prototipo: completá los datos y generá el JPG.</p>
+    <p class="sub">Completá los datos para generar tu carné.</p>
     <div class="grid">
-      <div><label>Nombre<input id="nombre" value=""></label></div>
-      <div><label>Edad<input id="edad" value=""></label></div>
-      <div><label>Localidad<input id="localidad" value=""></label></div>
-      <div><label>Superhéroe favorito<input id="heroe" value=""></label></div>
-      <div><label>¿Con qué famoso/a pasarías una noche?<input id="famoso" value=""></label></div>
-      <div><label>Último boliche al que fuiste<input id="boliche" value=""></label></div>
-      <div class="full"><label>Foto<input id="foto" type="file" accept="image/*"></label></div>
+      <div><label>NOMBRE<input id="nombre" value=""></label></div>
+      <div>
+        <label>EDAD
+          <select id="edad">
+            <!-- Opciones generadas dinámicamente de 30 a 60 -->
+          </select>
+        </label>
+      </div>
+      <div><label>LOCALIDAD<input id="localidad" value=""></label></div>
+      <div>
+        <label>SIGNO
+          <select id="signo">
+            <option value="Aries">Aries</option>
+            <option value="Tauro">Tauro</option>
+            <option value="Géminis">Géminis</option>
+            <option value="Cáncer">Cáncer</option>
+            <option value="Leo">Leo</option>
+            <option value="Virgo">Virgo</option>
+            <option value="Libra">Libra</option>
+            <option value="Escorpio">Escorpio</option>
+            <option value="Sagitario">Sagitario</option>
+            <option value="Capricornio">Capricornio</option>
+            <option value="Acuario">Acuario</option>
+            <option value="Piscis">Piscis</option>
+          </select>
+        </label>
+      </div>
+      <div><label>PROFESIÓN<input id="profesion" value=""></label></div>
+      <div><label>CANTIDAD DE JUNTADAS PACHANGUERAS<input id="juntadas" value=""></label></div>
+      <div class="full"><label>DESCRIBITE EN POCAS PALABRAS (Máx 2 renglones)<textarea id="descripcion" maxlength="110"></textarea></label></div>
+      <div class="full"><label>FOTO<input id="foto" type="file" accept="image/*"></label></div>
     </div>
     <button id="generate">🖼 Generar carné</button>
     <button id="download">⬇ Descargar JPG</button>
-    <p class="note">Este prototipo genera el carné con los datos ingresados.</p>
   </div>
   <div class="panel">
-    <canvas id="canvas" width="1463" height="1081"></canvas>
+    <canvas id="canvas" width="1200" height="800"></canvas>
   </div>
 </div>
 
 <script>
+// Poblar el menú desplegable de edad (30 a 60)
+const selectEdad = document.getElementById('edad');
+for (let i = 30; i <= 60; i++) {
+  const opt = document.createElement('option');
+  opt.value = i;
+  opt.textContent = i;
+  selectEdad.appendChild(opt);
+}
+
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
-const bg = new Image();
-bg.src = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAMCAgMCAgMDAwMEAwMEBQgFBQQEBQoHBwYIDAoMDAsKCwsNDhIQDQ4RDgsLEBYQERMUFRUVDA8XGBYUGBIUFRT/2wBDAQMEBAUEBQkFBQkUDQsNFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBT/wAARCARUBgADASIAAhEBAxEB/8QAHgAAAgEFAQEBAAAAAAAAAAAAAAECBAUGBwgJAwr/xABsEAABAwMBBAQHBgsQDQwBBAMBAAIDBAURBgcSITEIE0FRCRQiMmFx0UKBkZSV0hUWFxgjUlZ0obHBGTM2N0ZHVVdicnOFkpOy4SRDRFNUZHWChLPCw9MlJzQ1OEVjg6KjtPAoJmWWpPGG4v/EABsBAQADAQEBAQAAAAAAAAAAAAABAvg3X18888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------s.jpg";
+let userImage = null;
 
-let userFoto = null;
+const logoImage = new Image();
+logoImage.src = 'logo.png';
+
+logoImage.onload = function() {
+  drawCard();
+};
+
+document.fonts.ready.then(() => {
+  drawCard();
+});
 
 document.getElementById('foto').addEventListener('change', function(e) {
   const file = e.target.files[0];
   if (file) {
     const reader = new FileReader();
-    reader.onload = function(evt) {
-      userFoto = new Image();
-      userFoto.onload = drawCanvas;
-      userFoto.src = evt.target.result;
+    reader.onload = function(event) {
+      userImage = new Image();
+      userImage.onload = function() {
+        drawCard();
+      };
+      userImage.src = event.target.result;
     };
     reader.readAsDataURL(file);
   }
 });
 
-function drawCanvas() {
-  // Limpiar canvas
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  // Dibuja la imagen base
-  ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
-
-  // Obtener los datos actuales del formulario
-  const nombre = document.getElementById('nombre').value;
-  const edad = document.getElementById('edad').value;
-  const localidad = document.getElementById('localidad').value;
-  const heroe = document.getElementById('heroe').value;
-  const famoso = document.getElementById('famoso').value;
-  const boliche = document.getElementById('boliche').value;
-
-  // Configuración de texto
-  ctx.font = 'bold 36px Arial';
-  ctx.fillStyle = '#000000';
-
-  // Ocultar/tapar datos previos de la plantilla (si existen) con rectángulos blancos
-  // Ajusta estas posiciones si tu plantilla trae textos predeterminados impresos sobre la imagen
-  ctx.fillStyle = '#FFFFFF';
-  ctx.fillRect(520, 290, 400, 50); // Fondo Nombre
-  ctx.fillRect(520, 360, 200, 50); // Fondo Edad
-  ctx.fillRect(520, 430, 400, 50); // Fondo Localidad
-  ctx.fillRect(520, 500, 400, 50); // Fondo Superhéroe
-  ctx.fillRect(520, 570, 400, 50); // Fondo Famoso
-  ctx.fillRect(520, 640, 400, 50); // Fondo Boliche
-
-  // Escribir solo si el usuario ingresó algún valor
-  ctx.fillStyle = '#000000';
-  if (nombre) ctx.fillText(nombre, 530, 330);
-  if (edad) ctx.fillText(edad, 530, 400);
-  if (localidad) ctx.fillText(localidad, 530, 470);
-  if (heroe) ctx.fillText(heroe, 530, 540);
-  if (famoso) ctx.fillText(famoso, 530, 610);
-  if (boliche) ctx.fillText(boliche, 530, 680);
-
-  // Dibujar la foto subida si existe
-  if (userFoto) {
-    // Ejemplo de ubicación de foto: ajustar coordenadas (X, Y, Ancho, Alto) según tu plantilla
-    ctx.drawImage(userFoto, 100, 280, 350, 420);
-  }
+function drawRoundRect(ctx, x, y, width, height, radius) {
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.lineTo(x + width - radius, y);
+  ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+  ctx.lineTo(x + width, y + height - radius);
+  ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+  ctx.lineTo(x + radius, y + height);
+  ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+  ctx.lineTo(x, y + radius);
+  ctx.quadraticCurveTo(x, y, x + radius, y);
+  ctx.closePath();
 }
 
-// Escuchar eventos para redibujar al hacer clic en el botón Generar
-document.getElementById('generate').addEventListener('click', drawCanvas);
+function drawFittedText(ctx, text, x, y, maxWidth, baseSize) {
+  let fontSize = baseSize;
+  ctx.font = `700 ${fontSize}px "Caveat", cursive, sans-serif`;
+  while (ctx.measureText(text).width > maxWidth && fontSize > 16) {
+    fontSize -= 2;
+    ctx.font = `700 ${fontSize}px "Caveat", cursive, sans-serif`;
+  }
+  ctx.fillText(text, x, y);
+}
 
-// Cargar canvas inicialmente al cargar la imagen de fondo
-bg.onload = drawCanvas;
+function drawTwoLineText(ctx, text, x, y, maxWidth, lineHeight, baseSize) {
+  if (!text) return;
 
-// Descargar la imagen
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(x - 5, y - baseSize, maxWidth + 5, (lineHeight * 2) + 20);
+  ctx.clip();
+
+  let fontSize = baseSize;
+  ctx.font = `700 ${fontSize}px "Caveat", cursive, sans-serif`;
+
+  let line1 = '';
+  let line2 = '';
+
+  let words = text.split(' ');
+  let isSingleLongWord = words.length === 1 && ctx.measureText(text).width > maxWidth;
+
+  if (isSingleLongWord) {
+    for (let i = 0; i < text.length; i++) {
+      let testLine = line1 + text[i];
+      if (ctx.measureText(testLine).width <= maxWidth) {
+        line1 = testLine;
+      } else {
+        line2 = text.slice(i);
+        break;
+      }
+    }
+  } else {
+    for (let n = 0; n < words.length; n++) {
+      let testLine = line1 + (line1 ? ' ' : '') + words[n];
+      if (ctx.measureText(testLine).width <= maxWidth) {
+        line1 = testLine;
+      } else {
+        line2 = words.slice(n).join(' ');
+        break;
+      }
+    }
+  }
+
+  while ((ctx.measureText(line1).width > maxWidth || ctx.measureText(line2).width > maxWidth) && fontSize > 16) {
+    fontSize -= 1;
+    ctx.font = `700 ${fontSize}px "Caveat", cursive, sans-serif`;
+  }
+
+  ctx.fillText(line1, x, y);
+  if (line2) {
+    ctx.fillText(line2, x, y + lineHeight);
+  }
+
+  ctx.restore();
+}
+
+function drawCard() {
+  const W = canvas.width;
+  const H = canvas.height;
+
+  // 1. Fondo negro
+  ctx.fillStyle = '#000000';
+  ctx.fillRect(0, 0, W, H);
+
+  // 2. Doble marco dorado
+  ctx.strokeStyle = '#d4af37';
+  ctx.lineWidth = 3;
+  drawRoundRect(ctx, 20, 20, W - 40, H - 40, 25);
+  ctx.stroke();
+
+  ctx.lineWidth = 1;
+  drawRoundRect(ctx, 26, 26, W - 52, H - 52, 20);
+  ctx.stroke();
+
+  // 3. Logo Pachanga
+  if (logoImage.complete && logoImage.naturalWidth !== 0) {
+    const logoW = 440;
+    const logoH = (logoImage.height / logoImage.width) * logoW;
+    ctx.drawImage(logoImage, 130, 45, logoW, logoH);
+  }
+
+  // 4. Etiqueta "CARNÉ PACHANGOSO"
+  const tagX = 710, tagY = 70, tagW = 420, tagH = 70;
+  ctx.strokeStyle = '#d4af37';
+  ctx.lineWidth = 2.5;
+  drawRoundRect(ctx, tagX, tagY, tagW, tagH, 20);
+  ctx.stroke();
+
+  ctx.fillStyle = '#f7ebd3';
+  ctx.font = '800 28px "Montserrat", sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('CARNÉ PACHANGOSO', tagX + (tagW / 2), tagY + 45);
+
+  // 5. Marco y Foto
+  const photoX = 700, photoY = 160, photoW = 440, photoH = 470, photoRadius = 30;
+
+  ctx.save();
+  drawRoundRect(ctx, photoX, photoY, photoW, photoH, photoRadius);
+  ctx.clip();
+
+  if (userImage) {
+    const aspect = userImage.width / userImage.height;
+    let drawW = photoW;
+    let drawH = photoW / aspect;
+    if (drawH < photoH) {
+      drawH = photoH;
+      drawW = photoH * aspect;
+    }
+    const drawX = photoX + (photoW - drawW) / 2;
+    const drawY = photoY + (photoH - drawH) / 2;
+    ctx.drawImage(userImage, drawX, drawY, drawW, drawH);
+  } else {
+    ctx.fillStyle = '#1a1a1a';
+    ctx.fillRect(photoX, photoY, photoW, photoH);
+    ctx.fillStyle = '#666';
+    ctx.font = '20px "Montserrat"';
+    ctx.textAlign = 'center';
+    ctx.fillText('Cargar foto', photoX + photoW / 2, photoY + photoH / 2);
+  }
+  ctx.restore();
+
+  ctx.strokeStyle = '#d4af37';
+  ctx.lineWidth = 3;
+  drawRoundRect(ctx, photoX, photoY, photoW, photoH, photoRadius);
+  ctx.stroke();
+
+  // 6. BLOQUE BAJO LA FOTO: CANTIDAD DE JUNTADAS PACHANGUERAS
+  const juntadasVal = document.getElementById('juntadas').value;
+  const photoCenterX = photoX + (photoW / 2);
+
+  ctx.fillStyle = '#d4af37';
+  ctx.font = '700 17px "Montserrat", sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('CANTIDAD DE JUNTADAS PACHANGUERAS', photoCenterX, 665);
+
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '700 40px "Caveat", cursive, sans-serif';
+  ctx.fillText(juntadasVal, photoCenterX, 710);
+
+  ctx.strokeStyle = '#d4af37';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(photoX + 20, 725);
+  ctx.lineTo(photoX + photoW - 20, 725);
+  ctx.stroke();
+
+  // Reset de alineación
+  ctx.textAlign = 'left';
+
+  // 7. COLUMNA IZQUIERDA DE DATOS
+  const nombreVal = document.getElementById('nombre').value;
+  const edadVal = document.getElementById('edad').value;
+
+  // Fila Nombre y Edad
+  ctx.fillStyle = '#d4af37';
+  ctx.font = '700 18px "Montserrat", sans-serif';
+  ctx.fillText('NOMBRE:', 50, 240);
+  ctx.fillStyle = '#ffffff';
+  drawFittedText(ctx, nombreVal, 160, 244, 280, 38);
+
+  ctx.fillStyle = '#d4af37';
+  ctx.font = '700 18px "Montserrat", sans-serif';
+  ctx.fillText('EDAD:', 480, 240);
+  ctx.fillStyle = '#ffffff';
+  drawFittedText(ctx, edadVal, 550, 244, 100, 38);
+
+  ctx.strokeStyle = '#d4af37';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(50, 262); ctx.lineTo(660, 262); ctx.stroke();
+
+  // Fila Localidad
+  ctx.fillStyle = '#d4af37';
+  ctx.font = '700 18px "Montserrat", sans-serif';
+  ctx.fillText('LOCALIDAD:', 50, 330);
+  ctx.fillStyle = '#ffffff';
+  drawFittedText(ctx, document.getElementById('localidad').value, 190, 334, 460, 38);
+  ctx.beginPath(); ctx.moveTo(50, 352); ctx.lineTo(660, 352); ctx.stroke();
+
+  // Fila Signo
+  ctx.fillStyle = '#d4af37';
+  ctx.font = '700 18px "Montserrat", sans-serif';
+  ctx.fillText('SIGNO:', 50, 420);
+  ctx.fillStyle = '#ffffff';
+  drawFittedText(ctx, document.getElementById('signo').value, 140, 424, 510, 38);
+  ctx.beginPath(); ctx.moveTo(50, 442); ctx.lineTo(660, 442); ctx.stroke();
+
+  // Fila Profesión
+  ctx.fillStyle = '#d4af37';
+  ctx.font = '700 18px "Montserrat", sans-serif';
+  ctx.fillText('PROFESIÓN:', 50, 510);
+  ctx.fillStyle = '#ffffff';
+  drawFittedText(ctx, document.getElementById('profesion').value, 190, 514, 460, 38);
+  ctx.beginPath(); ctx.moveTo(50, 532); ctx.lineTo(660, 532); ctx.stroke();
+
+  // Fila Describite en pocas palabras
+  ctx.fillStyle = '#d4af37';
+  ctx.font = '700 17px "Montserrat", sans-serif';
+  ctx.fillText('DESCRIBITE EN', 50, 595);
+  ctx.fillText('POCAS PALABRAS:', 50, 617);
+
+  ctx.fillStyle = '#ffffff';
+  drawTwoLineText(ctx, document.getElementById('descripcion').value, 230, 595, 420, 30, 34);
+
+  ctx.strokeStyle = '#d4af37';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(50, 645); ctx.lineTo(660, 645); ctx.stroke();
+}
+
+document.getElementById('generate').addEventListener('click', drawCard);
+
 document.getElementById('download').addEventListener('click', function() {
   const link = document.createElement('a');
   link.download = 'carne-pachangoso.jpg';
-  link.href = canvas.toDataURL('image/jpeg');
+  link.href = canvas.toDataURL('image/jpeg', 0.95);
   link.click();
 });
 </script>
 </body>
+</html>
